@@ -50,7 +50,7 @@ app.route(prefix+'/users/:id')
 .delete(userFunc.deleteUser);
 
 app.route(prefix+'/users')
-.post(userFunc.createUser)
+.post(userFunc.postUser)
 .put(userFunc.updateUser);
 
 // error handler
