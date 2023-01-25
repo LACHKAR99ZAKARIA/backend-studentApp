@@ -9,6 +9,8 @@ let mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 var userFunc = require('./routes/users');
+var loginModule = require('./routes/login');
+const users = require('./model/users');
 
 const uri = 'mongodb+srv://Zakaria:L1gpHCFZEzmDw8BE@cluster0.sgiwmpq.mongodb.net/emsiapp?retryWrites=true&w=majority';
 const options={
@@ -53,15 +55,7 @@ app.route(prefix+'/users')
 .post(userFunc.postUser)
 .put(userFunc.updateUser);
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(prefix+'/auth',loginModule);
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
 
 module.exports = app;
