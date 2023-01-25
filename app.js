@@ -45,6 +45,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.route(prefix+'/users')
 .get(userFunc.getUsers);
 
+app.route(prefix+'/users/:id')
+.get(userFunc.getUser)
+.delete(userFunc.deleteUser);
+
+app.route(prefix+'/users')
+.post(userFunc.createUser)
+.put(userFunc.updateUser);
+
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development

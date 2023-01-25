@@ -8,6 +8,7 @@ let users = Schema({
     email:String,
     password:String,
     roll:String,
+    dateExpiration:Date,
 });
 
 users.plugin(aggregatePaginate);
