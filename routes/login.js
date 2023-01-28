@@ -1,30 +1,37 @@
 var express = require('express');
 let users = require('../model/users');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const { compare } = require('bcryptjs');
+const passport = require('passport');
 
-router.post("/login", async (req, res) => {
-    users.findOne({ email: req.body.email,password:req.body.password })
-        .then(user => {
-            if (!user) {
-                return res.status(401).json({ error: 'Utilisateur non trouvé !' });
+
+
+router.post('/login', async (req, res) => {
+    const user = await users.findOne({ email: req.body.email })
+    if (!user) {
+      return res.status(401).json({ message: 'Utilisateur non trouvé' })
+    }
+  
+    // Vérification du mot de passe
+    if(req.body.password==user.password){
+        passport.authenticate("local")(req,res,(err,user)=>{
+            if(err){
+                req.flash('error',err.message);
+                return res.json({"login":false});
             }
-            bcrypt.compare(req.body.password, user.password)
-                .then(valid => {
-                    if (!valid) {
-                        return res.status(401).json({ error: 'Mot de passe incorrect !' });
-                    }
-                    res.status(200).json({
-                        userId: user._id,
-                        token: jwt.sign(
-                            'RANDOM_TOKEN_SECRET',
-                            { expiresIn: '24h' }
-                        )
-                    });
-                })
-                .catch(error => res.status(500).json({ error }));
+            return res.json({"login":true});
         })
-        .catch(error => res.status(500).json({ error }));
- })
+    }else{
+        return res.status(401).json({ message: 'Mot de passe incorrect' })
+    }
+  })
 
+  router.get('/logout',(req,res)=>{
+    passport.authenticate("local")(req,res,(err,user)=>{
+    req.logout();
+    })
+    res.json({"logout":true});
+  })
 
 module.exports = router;
