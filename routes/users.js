@@ -23,9 +23,9 @@ function postUser(req ,res){
     let user = new users(req.body);
     user.save((err,user)=>{
         if(err){
-            res.send(err);
+            res.send(false);
         }
-        res.json(user);
+        res.send(true);
 })
 }
 
@@ -34,9 +34,9 @@ function updateUser(req,res){
     console.log(req.body);
     users.findByIdAndUpdate(req.body._id,req.body,{new:true},(err,users)=>{
         if(err){
-            res.send(err);
+            res.send(false);
         }else{
-            res.json({message:'updated'})
+            res.send(true)
         }
     })
 }
@@ -44,9 +44,9 @@ function updateUser(req,res){
 function deleteUser(req,res){
     users.findByIdAndRemove(req.params.id,(err,users)=>{
             if(err){
-                res.send(err);
+                res.send(false);
             }else{
-                res.json({message:'deleted'})
+                res.send(true)
             }
         })
     }
