@@ -8,30 +8,37 @@ const passport = require('passport');
 
 
 router.post('/login', async (req, res) => {
-    const user = await users.findOne({ email: req.body.email })
+      const user = await users.findOne({ email: req.body.email })
     if (!user) {
-      return res.status(401).json({ message: 'Utilisateur non trouvé' })
+      return res.json({ login: false,message: 'Undefined' })
     }
   
     // Vérification du mot de passe
     if(req.body.password==user.password){
-        passport.authenticate("local")(req,res,(err,user)=>{
-            if(err){
-                req.flash('error',err.message);
-                return res.json({"login":false});
-            }
-            return res.json({"login":true});
-        })
+        req.session.user=user;
+        return res.json({ login: true,user })
     }else{
-        return res.status(401).json({ message: 'Mot de passe incorrect' })
+        return res.json({ login: false })
     }
+
+    
   })
 
   router.get('/logout',(req,res)=>{
-    passport.authenticate("local")(req,res,(err,user)=>{
-    req.logout();
-    })
-    res.json({"logout":true});
+    if (req.session.user) {
+      req.session.destroy();
+      return res.send({ message: 'Logout successful' });
+    }
+  })
+
+  router.get('/islogin',(req, res) => {
+    if (req.session.user) {
+      s=req.session.user;
+      return res.send({ loged:true,s });
+    }
+    else{
+      return res.send({ loged:false,});
+    }
   })
 
 module.exports = router;
